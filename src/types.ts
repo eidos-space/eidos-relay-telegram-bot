@@ -1,4 +1,4 @@
-// Telegram Update and Message types
+// Telegram Update and Message types (minimal for routing and reactions)
 
 export interface TelegramUser {
   id: number;
@@ -6,16 +6,11 @@ export interface TelegramUser {
   first_name: string;
   last_name?: string;
   username?: string;
-  language_code?: string;
 }
 
 export interface TelegramChat {
   id: number;
-  type: "private" | "group" | "supergroup" | "channel";
-  title?: string;
-  username?: string;
-  first_name?: string;
-  last_name?: string;
+  type: string;
 }
 
 export interface TelegramMessage {
@@ -24,7 +19,7 @@ export interface TelegramMessage {
   chat: TelegramChat;
   date: number;
   text?: string;
-  caption?: string;
+  [key: string]: any; // Allow any other raw telegram fields (media, location, contacts, etc.)
 }
 
 export interface TelegramUpdate {
@@ -35,7 +30,6 @@ export interface TelegramUpdate {
 }
 
 // Env & user config types
-
 export interface Env {
   USER_CONFIG: KVNamespace;
   TELEGRAM_BOT_TOKEN: string;

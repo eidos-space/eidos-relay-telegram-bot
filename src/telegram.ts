@@ -86,6 +86,24 @@ export async function deleteWebhook(botToken: string): Promise<boolean> {
 }
 
 /**
+ * Get file information from Telegram.
+ */
+export async function getFile(botToken: string, fileId: string): Promise<{ file_path?: string } | null> {
+  const url = `${TELEGRAM_API_BASE}/bot${botToken}/getFile?file_id=${fileId}`;
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  const data = await res.json() as { ok: boolean; result?: { file_path?: string } };
+  return data.ok ? data.result ?? null : null;
+}
+
+/**
+ * Construct the public URL for a Telegram file.
+ */
+export function getFileUrl(botToken: string, filePath: string): string {
+  return `${TELEGRAM_API_BASE}/file/bot${botToken}/${filePath}`;
+}
+
+/**
  * Get current webhook info from Telegram.
  */
 export async function getWebhookInfo(botToken: string): Promise<unknown> {

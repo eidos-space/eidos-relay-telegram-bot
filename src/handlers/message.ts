@@ -1,22 +1,21 @@
-// Message forwarder: sends Telegram messages to the relay send API
-
 import { sendMessage, setMessageReaction } from "../telegram";
 import { getUserConfig } from "../config";
 import type { Env, TelegramMessage } from "../types";
 
 interface RelayResponse {
-  success: boolean;
-  errors?: Array<{ code?: number; message: string }>;
+  success?: boolean;
+  errors?: Array<{ code?: string | number; message: string }>;
   result?: { id: string };
+  error?: string;
+  message?: string;
 }
 
 /**
- * Forward a Telegram message body to the configured relay service.
+ * Forward the raw Telegram message to the configured relay service.
  */
 export async function forwardMessage(msg: TelegramMessage, env: Env): Promise<void> {
   const userId = msg.from?.id;
   if (!userId) {
-    console.log("No user ID found, reacting with 👎");
     await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👎");
     return;
   }
@@ -31,26 +30,12 @@ export async function forwardMessage(msg: TelegramMessage, env: Env): Promise<vo
     return;
   }
 
-  const text = msg.text ?? msg.caption ?? "";
-  const from = msg.from
-    ? {
-        id: msg.from.id,
-        first_name: msg.from.first_name,
-        last_name: msg.from.last_name,
-        username: msg.from.username,
-      }
-    : null;
-
-  // Build the relay payload
+  // Build the relay payload nesting the raw telegram message.
   const payload = {
     body: {
+      message: msg,
       source: "telegram",
-      chat_id: msg.chat.id,
-      message_id: msg.message_id,
-      text,
-      from,
-      date: msg.date,
-      timestamp_ms: msg.date * 1000,
+      timestamp_ms: Date.now(),
     },
     contentType: "json",
     metadata: {
@@ -62,9 +47,8 @@ export async function forwardMessage(msg: TelegramMessage, env: Env): Promise<vo
   const RELAY_URL = "https://api.eidos.space";
   const sendUrl = `${RELAY_URL}/v1/relays/${config.relayId}/messages/send`;
 
-  let relayRes: Response;
   try {
-    relayRes = await fetch(sendUrl, {
+    const relayRes = await fetch(sendUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -72,26 +56,23 @@ export async function forwardMessage(msg: TelegramMessage, env: Env): Promise<vo
       },
       body: JSON.stringify(payload),
     });
+
+    const rawResText = await relayRes.text();
+    let data: RelayResponse;
+    try {
+      data = JSON.parse(rawResText) as RelayResponse;
+    } catch {
+      await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👎");
+      return;
+    }
+
+    if (data.success === true) {
+      await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👌");
+    } else {
+      await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👎");
+    }
   } catch (err) {
     console.error("Relay fetch error:", err);
-    await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👎");
-    return;
-  }
-
-  let data: RelayResponse;
-  try {
-    data = (await relayRes.json()) as RelayResponse;
-  } catch {
-    console.error("Relay returned invalid JSON");
-    await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👎");
-    return;
-  }
-
-  console.log(`Relay response: success=${data.success}`);
-  if (data.success) {
-    await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👌");
-  } else {
-    console.error("Relay reported failure:", data.errors);
     await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👎");
   }
 }

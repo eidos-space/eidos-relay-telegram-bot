@@ -83,16 +83,21 @@ The message body sent to the Relay Service follows this format:
 {
   "body": {
     "source": "telegram",
-    "chat_id": 123456789,
-    "message_id": 42,
-    "text": "Hello, World!",
-    "from": {
-      "id": 987654321,
-      "first_name": "Alice",
-      "username": "alice"
-    },
-    "date": 1709385600,
-    "timestamp_ms": 1709385600000
+    "timestamp_ms": 1709385600000,
+    "message": {
+      "message_id": 42,
+      "from": {
+        "id": 987654321,
+        "first_name": "Alice",
+        "username": "alice"
+      },
+      "chat": {
+        "id": 123456789,
+        "type": "private"
+      },
+      "date": 1709385600,
+      "text": "Hello, World!"
+    }
   },
   "contentType": "json",
   "metadata": {

@@ -2,10 +2,11 @@
 // Cloudflare Worker entry point
 
 import { Hono } from "hono";
+import { cache } from "hono/cache";
 import type { Env } from "./types";
 import type { TelegramUpdate } from "./types";
 import { handleUpdate } from "./handlers/webhook";
-import { deleteWebhook, getWebhookInfo, setWebhook } from "./telegram";
+import { deleteWebhook, getFile, getFileUrl, getWebhookInfo, setWebhook } from "./telegram";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -97,5 +98,36 @@ app.post("/webhook", async (c) => {
 
   return c.json({ success: true });
 });
+
+// ─── File proxy ─────────────────────────────────────────────────────────────
+
+/**
+ * GET /file/:fileId
+ * Resolves the file_id and redirects to the actual Telegram file URL.
+ * Cached for 50 minutes to stay within Telegram's 1-hour URL validity.
+ */
+app.get(
+  "/file/:fileId",
+  cache({
+    cacheName: "telegram-file-proxy",
+    cacheControl: "max-age=3000",
+  }),
+  async (c) => {
+    const token = c.env.TELEGRAM_BOT_TOKEN;
+    const fileId = c.req.param("fileId");
+
+    if (!token) {
+      return c.json({ success: false, error: "TELEGRAM_BOT_TOKEN not set" }, 500);
+    }
+
+    const fileInfo = await getFile(token, fileId);
+    if (!fileInfo?.file_path) {
+      return c.json({ success: false, error: "File not found or too large" }, 404);
+    }
+
+    const fileUrl = getFileUrl(token, fileInfo.file_path);
+    return c.redirect(fileUrl);
+  }
+);
 
 export default app;
