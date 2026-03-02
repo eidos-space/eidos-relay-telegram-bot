@@ -1,0 +1,22 @@
+name = "eidos-relay-telegram-bot"
+main = "src/index.ts"
+compatibility_date = "2025-03-01"
+
+# KV Namespace for per-user relay configuration
+# Create with: wrangler kv namespace create USER_CONFIG
+# Then replace the id below with the returned ID
+[[kv_namespaces]]
+binding = "USER_CONFIG"
+id = "9a9f86c9913042f785db69ffb7ae6201"
+
+# Telegram Bot Token is configured as a secret:
+#   wrangler secret put TELEGRAM_BOT_TOKEN
+# [vars] section intentionally omitted - secrets should not be in vars
+
+[env.dev]
+name = "eidos-relay-telegram-bot-dev"
+# For local dev, use a preview KV namespace:
+# [[env.dev.kv_namespaces]]
+# binding = "USER_CONFIG"
+# id = "REPLACE_WITH_YOUR_PREVIEW_KV_NAMESPACE_ID"
+# preview_id = "REPLACE_WITH_YOUR_PREVIEW_KV_NAMESPACE_ID"

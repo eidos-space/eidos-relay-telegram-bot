@@ -1,0 +1,35 @@
+{
+  "name": "eidos-relay-telegram-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot on Cloudflare Workers that forwards messages to the Eidos Relay service",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "setup-webhook": "wrangler dev & sleep 3 && curl http://localhost:8787/setup"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "telegram",
+    "bot",
+    "relay"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.7.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250301.0",
+    "typescript": "^5.8.2",
+    "wrangler": "^4.69.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@10.14.0"
+}
