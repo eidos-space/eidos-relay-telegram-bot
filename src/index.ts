@@ -126,7 +126,11 @@ app.get(
     }
 
     const fileUrl = getFileUrl(token, fileInfo.file_path);
-    return c.redirect(fileUrl);
+    return c.newResponse(null, 302, {
+      Location: fileUrl,
+      "Access-Control-Allow-Origin": "*",
+      "Cross-Origin-Resource-Policy": "cross-origin",
+    });
   }
 );
 
