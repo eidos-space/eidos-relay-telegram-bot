@@ -36,6 +36,6 @@ export interface Env {
 }
 
 export interface UserConfig {
-  relayId: string;
+  channelId: string;
   token: string;
 }

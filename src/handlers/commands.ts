@@ -8,13 +8,13 @@ const HELP_TEXT = `
 <b>Eidos Relay Bot — Commands</b>
 
 /start — Show welcome message
-/config &lt;relayId&gt; &lt;token&gt; — Set your Relay
+/config &lt;channelId&gt; &lt;token&gt; — Set your Relay Channel
 /status — Show current configuration
 /clear — Clear configuration
 /help — Show this help
 
 <b>Example:</b>
-<code>/config my-relay-id your-bearer-token</code>
+<code>/config my-channel-id your-bearer-token</code>
 
 After configuring, just send any message to forward it to your Relay queue.
 `.trim();
@@ -25,7 +25,7 @@ const START_TEXT = `
 This bot forwards your messages to your <b>Eidos Relay</b> queue for collection and processing.
 
 <b>Get started:</b>
-Use /config to set your Relay ID and Bearer token.
+Use /config to set your Channel ID and Bearer token.
 
 ${HELP_TEXT}
 `.trim();
@@ -53,14 +53,14 @@ export async function handleConfig(
     await sendMessage(
       env.TELEGRAM_BOT_TOKEN,
       msg.chat.id,
-      "❌ Not enough arguments.\n\nUsage: <code>/config &lt;relayId&gt; &lt;token&gt;</code>\n\nExample:\n<code>/config my-relay your-token</code>",
+      "❌ Not enough arguments.\n\nUsage: <code>/config &lt;channelId&gt; &lt;token&gt;</code>\n\nExample:\n<code>/config my-channel your-token</code>",
       { parseMode: "HTML" },
     );
     return;
   }
 
-  const [relayId, token] = args;
-  const config: UserConfig = { relayId, token };
+  const [channelId, token] = args;
+  const config: UserConfig = { channelId, token };
   await setUserConfig(env, userId, config);
 
   // Mask the token for display
@@ -72,7 +72,7 @@ export async function handleConfig(
     env.TELEGRAM_BOT_TOKEN,
     msg.chat.id,
     `✅ <b>Configuration saved!</b>\n\n` +
-    `📦 Relay ID: <code>${relayId}</code>\n` +
+    `📦 Channel ID: <code>${channelId}</code>\n` +
     `🔑 Token: <code>${maskedToken}</code>\n\n` +
     `Now just send any message to forward it to your Relay queue.`,
     { parseMode: "HTML" },
@@ -91,7 +91,7 @@ export async function handleStatus(msg: TelegramMessage, env: Env): Promise<void
     await sendMessage(
       env.TELEGRAM_BOT_TOKEN,
       msg.chat.id,
-      "⚠️ No Relay configured yet. Use /config to set one.",
+      "⚠️ No Channel configured yet. Use /config to set one.",
     );
     return;
   }
@@ -104,7 +104,7 @@ export async function handleStatus(msg: TelegramMessage, env: Env): Promise<void
     env.TELEGRAM_BOT_TOKEN,
     msg.chat.id,
     `📋 <b>Current configuration:</b>\n\n` +
-    `📦 Relay ID: <code>${config.relayId}</code>\n` +
+    `📦 Channel ID: <code>${config.channelId}</code>\n` +
     `🔑 Token: <code>${maskedToken}</code>`,
     { parseMode: "HTML" },
   );

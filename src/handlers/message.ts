@@ -45,7 +45,7 @@ export async function forwardMessage(msg: TelegramMessage, env: Env): Promise<vo
   };
 
   const RELAY_URL = "https://api.eidos.space";
-  const sendUrl = `${RELAY_URL}/v1/relays/${config.relayId}/messages/send`;
+  const sendUrl = `${RELAY_URL}/v1/relay/channels/${config.channelId}/messages/`;
 
   try {
     const relayRes = await fetch(sendUrl, {

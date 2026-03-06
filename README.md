@@ -4,8 +4,8 @@ A Telegram bot running on Cloudflare Workers that forwards user messages to the 
 
 ## Features
 
-- 📨 Forward Telegram messages to the Relay service `/v1/relays/{relayId}/messages/send` endpoint.
-- 🔧 Per-user configuration for Relay ID and Bearer Token (stored in Cloudflare KV).
+- 📨 Forward Telegram messages to the Relay service `/v1/relay/channels/{channelId}/messages/` endpoint.
+- 🔧 Per-user configuration for Channel ID and Bearer Token (stored in Cloudflare KV).
 - 💬 Supports commands: `/start`, `/config`, `/status`, `/clear`, `/help`.
 - 👌 Instant feedback using Telegram Reactions.
 
@@ -60,7 +60,7 @@ https://<your-worker-name>.<your-subdomain>.workers.dev/setup
 | Command | Description |
 |------|------|
 | `/start` | Show welcome message |
-| `/config <relayId> <token>` | Configure Relay (defaults to api.eidos.space) |
+| `/config <channelId> <token>` | Configure Channel (defaults to api.eidos.space) |
 | `/status` | View current configuration |
 | `/clear` | Clear configuration |
 | `/help` | Show help |
@@ -68,7 +68,7 @@ https://<your-worker-name>.<your-subdomain>.workers.dev/setup
 ### Usage Example
 
 ```
-/config my-relay-id your-bearer-token
+/config my-channel-id your-bearer-token
 ```
 
 After configuration, simply send any text message. The bot will add an `👌` reaction to the message when successfully forwarded.
