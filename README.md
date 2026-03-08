@@ -4,7 +4,7 @@ A Telegram bot running on Cloudflare Workers that forwards user messages to the 
 
 ## Features
 
-- 📨 Forward Telegram messages to the Relay service `/v1/relay/channels/{channelId}/messages/` endpoint.
+- 📨 Forward Telegram messages to the Relay service `/v1/relay/channels/{channelId}/messages/send` endpoint.
 - 🔧 Per-user configuration for Channel ID and Bearer Token (stored in Cloudflare KV).
 - 💬 Supports commands: `/start`, `/config`, `/status`, `/clear`, `/help`.
 - 👌 Instant feedback using Telegram Reactions.

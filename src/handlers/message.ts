@@ -45,7 +45,7 @@ export async function forwardMessage(msg: TelegramMessage, env: Env): Promise<vo
   };
 
   const RELAY_URL = "https://api.eidos.space";
-  const sendUrl = `${RELAY_URL}/v1/relay/channels/${config.channelId}/messages/`;
+  const sendUrl = `${RELAY_URL}/v1/relay/channels/${config.channelId}/messages/send`;
 
   try {
     const relayRes = await fetch(sendUrl, {
@@ -66,7 +66,7 @@ export async function forwardMessage(msg: TelegramMessage, env: Env): Promise<vo
       return;
     }
 
-    if (data.success === true) {
+    if (data.success === true || relayRes.status === 200 || relayRes.status === 201) {
       await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👌");
     } else {
       await setMessageReaction(env.TELEGRAM_BOT_TOKEN, msg.chat.id, msg.message_id, "👎");
