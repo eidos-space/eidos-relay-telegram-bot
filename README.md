@@ -1,6 +1,6 @@
 # Eidos Relay Telegram Bot
 
-A Telegram bot running on Cloudflare Workers that forwards user messages to the [Eidos Relay Service](https://github.com/mayneyao/data-relay-service) message queue.
+A Telegram bot running on Cloudflare Workers that forwards user messages to the [Eidos Relay Service](https://eidos.space/relay) message queue.
 
 ## Features
 
